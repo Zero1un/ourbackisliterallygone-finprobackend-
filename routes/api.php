@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\API\v1\AppointmentController;
 
 Route::middleware('force.json')->group(function () {
 
@@ -16,15 +17,35 @@ Route::middleware('force.json')->group(function () {
 
         // Admin only routes -> admin token
         Route::post('/auth/register-doctor', [AuthController::class, 'registerDoctor'])->middleware('role:admin');
+        
         Route::get('/user', function (Request $request) {
             return $request->user();
         });
 
-        //doctor only routes -> doctor token
+        /*
 
+        |--------------------------------------------------------------------------
+        | API Version 1 Endpoints (Mandatory Project Requirement)
+        |--------------------------------------------------------------------------
+        */
+        Route::prefix('v1')->group(function () {
+            
+            // Patients only: Can create an appointment booking
+            Route::post('/appointments', [AppointmentController::class, 'store'])
+                ->middleware('role:patient');
 
-        // Example of role and email verified middleware usage (commented out for reference)
-        // Route::get('/admin/dashboard', [AdminController::class, 'index'])->middleware(['role:admin', 'email.verified']);
-        // Route::get('/doctor/patients', [DoctorController::class, 'patients'])->middleware(['role:doctor', 'email.verified']);
+            // Admins, Doctors, or Patients: Can view single appointment details
+            Route::get('/appointments/{id}', [AppointmentController::class, 'show'])
+                ->middleware('role:admin,doctor,patient');
+
+            // Admins or Doctors only: Can change or verify appointment statuses
+            Route::put('/appointments/{id}', [AppointmentController::class, 'update'])
+                ->middleware('role:admin,doctor');
+
+            // Admins, Doctors, or Patients: Can cancel/remove an appointment record
+            Route::delete('/appointments/{id}', [AppointmentController::class, 'destroy'])
+                ->middleware('role:admin,doctor,patient');
+                
+        });
     });
 });
