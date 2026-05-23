@@ -2,41 +2,21 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Patient extends Model
+class PatientFile extends Model
 {
-    use HasFactory;
+    // Arahkan ke tabel files
+    protected $table = 'files';
+
+    // Sesuaikan dengan nama kolom yang ada di phpMyAdmin
     protected $fillable = [
-        'user_id',
-        'date_of_birth',
-        'address',
-        'phone',
-        'photo'
+        'fileable_type', 
+        'fileable_id', 
+        'file_path', 
+        'original_name', 
+        'mime_type', 
+        'size', 
+        'uploaded_by'
     ];
-
-    protected function casts(): array
-    {
-        return [
-            'date_of_birth' => 'date',
-        ];
-    }
-
-    // DB Relations
-    public function user()
-    {
-        return $this->belongsTo(User::class);
-    }
-
-    public function appointments()
-    {
-        return $this->hasMany(Appointment::class);
-    }
-
-    public function files()
-    {
-        return $this->morphMany(File::class, 'fileable');
-    }
-
 }
