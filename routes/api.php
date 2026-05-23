@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\v1\AppointmentController;
 use App\Http\Controllers\API\v1\MedicalRecordController;
+use App\Http\Controllers\API\v1\FileController;
 
 Route::middleware('force.json')->group(function () {
 
@@ -42,6 +43,7 @@ Route::middleware('force.json')->group(function () {
         Route::get('/medical-records/{id}', [MedicalRecordController::class, 'show'])
             ->middleware('role:admin,doctor,patient');
 
+        Route::post('/files/upload', [FileController::class, 'upload']);
 
         // ==========================================
         // Fitur Janji Temu (Appointments v1)
