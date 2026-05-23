@@ -45,6 +45,10 @@ Route::middleware('force.json')->group(function () {
 
         Route::post('/files/upload', [FileController::class, 'upload']);
 
+        Route::post('/files/upload', [FileController::class, 'upload']);
+        Route::get('/files/{id}', [FileController::class, 'show']);
+        Route::delete('/files/{id}', [FileController::class, 'destroy']);
+
         // ==========================================
         // Fitur Janji Temu (Appointments v1)
         // ==========================================
