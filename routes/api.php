@@ -28,13 +28,24 @@ Route::middleware('force.json')->group(function () {
         Route::post('/auth/register-doctor', [\App\Http\Controllers\AuthDoctorRegisterController::class, 'registerDoctor'])
             ->middleware('role:admin');
 
-        // Doctor Only Endpoints (Fitur Rekam Medis Kamu)
+        // ==========================================
+        // Fitur Rekam Medis (Medical Records)
+        // ==========================================
+        
+        // 1. Doctor Only (Lihat semua & Tambah baru)
         Route::middleware('role:doctor')->group(function () {
             Route::get('/medical-records', [MedicalRecordController::class, 'index']);
             Route::post('/medical-records', [MedicalRecordController::class, 'store']);
         });
 
-        // API Version 1 Endpoints (Fitur Janji Temu Temanmu)
+        // 2. Admin, Dokter, Pasien (Baca spesifik 1 rekam medis) - INI ENDPOINT BARUMU
+        Route::get('/medical-records/{id}', [MedicalRecordController::class, 'show'])
+            ->middleware('role:admin,doctor,patient');
+
+
+        // ==========================================
+        // Fitur Janji Temu (Appointments v1)
+        // ==========================================
         Route::prefix('v1')->group(function () {
             
             // Patients only

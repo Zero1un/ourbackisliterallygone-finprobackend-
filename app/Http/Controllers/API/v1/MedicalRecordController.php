@@ -65,4 +65,25 @@ class MedicalRecordController extends Controller
             'data'    => $medicalRecord
         ], 201);
     }
+
+    public function show($id)
+    {
+        // Cari rekam medis berdasarkan ID, sekalian load relasi appointment dan doctor
+        $medicalRecord = MedicalRecord::with(['appointment', 'doctor.user'])->find($id);
+
+        // Jika data tidak ditemukan, kembalikan error 404
+        if (!$medicalRecord) {
+            return response()->json([
+                'status'  => false,
+                'message' => 'Data rekam medis tidak ditemukan.'
+            ], 404);
+        }
+
+        // Jika ketemu, kembalikan datanya dengan status 200 OK
+        return response()->json([
+            'status'  => true,
+            'message' => 'Detail rekam medis berhasil diambil',
+            'data'    => $medicalRecord
+        ], 200);
+    }
 }
