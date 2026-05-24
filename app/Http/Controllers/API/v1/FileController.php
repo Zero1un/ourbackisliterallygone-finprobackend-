@@ -16,7 +16,7 @@ class FileController extends Controller
     public function uploadAvatar(Request $request)
     {
         $request->validate([
-            'file' => 'required|image|mimes:jpeg,png,jpg|max:10240', // Maksimal 2MB
+            'file' => 'required|image|mimes:jpeg,png,jpg|max:10240', // Maksimal 10MB
         ]);
 
         if ($request->file('file')) {
@@ -129,10 +129,41 @@ class FileController extends Controller
         }
 
         $user = auth()->user();
-        if ($patientFile->uploaded_by !== $user->id && $user->role !== 'admin') {
+        
+        // Inisialisasi status akses awal
+        $hasAccess = false;
+
+        // 1. JIKA ADMIN -> Otomatis punya akses
+        if ($user->role === 'admin') {
+            $hasAccess = true;
+        } 
+        // 2. JIKA DOCTOR -> Punya akses jika dia yang mengunggah berkas tersebut
+        elseif ($user->role === 'doctor' && $patientFile->uploaded_by === $user->id) {
+            $hasAccess = true;
+        } 
+        // 3. JIKA PATIENT -> Punya akses jika berkas terikat dengan rekam medis milik dirinya
+        elseif ($user->role === 'patient') {
+            // Cek apakah berkas ini milik MedicalRecord
+            if ($patientFile->fileable_type === 'App\Models\MedicalRecord') {
+                $medicalRecord = $patientFile->fileable; // Mengambil data rekam medis terkait
+                
+                // Cek ke tabel appointment untuk memastikan patient_id sama dengan user yang login
+                if ($medicalRecord && $medicalRecord->appointment && $medicalRecord->appointment->patient_id === $user->id) {
+                    $hasAccess = true;
+                }
+            } 
+            // Opsional: Jika berkas adalah Avatar milik pasien itu sendiri
+            elseif ($patientFile->fileable_type === 'App\Models\User' && $patientFile->fileable_id === $user->id) {
+                $hasAccess = true;
+            }
+        }
+
+        // Jika setelah dicek semua kondisi di atas tetap tidak punya akses, lempar 403
+        if (!$hasAccess) {
             return response()->json(['message' => 'Anda tidak memiliki akses ke berkas ini'], 403);
         }
 
+        // Pengecekan fisik berkas di server
         if (!Storage::disk('public')->exists($patientFile->file_path)) {
             return response()->json([
                 'status'  => false,
