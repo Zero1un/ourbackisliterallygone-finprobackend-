@@ -43,9 +43,9 @@ Route::middleware('force.json')->group(function () {
         Route::get('/medical-records/{id}', [MedicalRecordController::class, 'show'])
             ->middleware('role:admin,doctor,patient');
 
-        Route::post('/files/upload', [FileController::class, 'upload']);
-
-        Route::post('/files/upload', [FileController::class, 'upload']);
+        Route::post('/files/upload-avatar', [FileController::class, 'uploadAvatar']);
+        Route::post('/files/upload-report', [FileController::class, 'uploadReport']);
+        
         Route::get('/files/{id}', [FileController::class, 'show']);
         Route::delete('/files/{id}', [FileController::class, 'destroy']);
 
