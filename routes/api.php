@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\v1\AppointmentController;
 use App\Http\Controllers\API\v1\MedicalRecordController;
 use App\Http\Controllers\API\PatientListController;
+use App\Http\Controllers\API\v1\FileController;
 
 Route::middleware('force.json')->group(function () {
 
@@ -43,6 +44,16 @@ Route::middleware('force.json')->group(function () {
         Route::get('/medical-records/{id}', [MedicalRecordController::class, 'show'])
             ->middleware('role:admin,doctor,patient');
 
+        Route::post('/files/upload-avatar', [FileController::class, 'uploadAvatar'])
+            ->middleware('role:doctor,patient,admin'); // <-- Tambahkan middleware role di sini
+
+        // 2. Hanya Boleh Diakses Oleh Doctor (atau sesuaikan dengan kebutuhanmu kemarin)
+        // 2. Kunci khusus untuk DOCTOR saja
+        Route::post('/files/upload-report', [FileController::class, 'uploadReport'])
+            ->middleware('role:doctor,admin');
+        
+        Route::get('/files/{id}', [FileController::class, 'show']);
+        Route::delete('/files/{id}', [FileController::class, 'destroy']);
 
         // ==========================================
         // Fitur Janji Temu (Appointments v1)
