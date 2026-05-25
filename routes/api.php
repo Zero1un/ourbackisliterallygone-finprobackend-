@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\v1\AppointmentController;
 use App\Http\Controllers\API\v1\MedicalRecordController;
+use App\Http\Controllers\API\PatientListController;
 use App\Http\Controllers\API\v1\FileController;
 
 Route::middleware('force.json')->group(function () {
@@ -79,5 +80,20 @@ Route::middleware('force.json')->group(function () {
         Route::get('/cek-janji', function () {
             dd(\App\Models\Appointment::all()->toArray());
         });
+
+        // ==========================================
+        // Fitur List Data Pasien (ListPatient v1)
+        // ==========================================
+        Route::prefix('v1')->group(function () {
+  
+        // Group protected by Sanctum and your custom Admin Role Middleware
+        Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
+    
+            // GET /api/v1/patients
+            // Test in Postman with: ?sort=name OR ?sort=today_appointment OR ?sort=doctor
+            Route::get('/patients', [PatientListController::class, 'index']);
+      
+  });
+});
     });
 });
