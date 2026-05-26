@@ -24,7 +24,7 @@ class MedicalRecordController extends Controller
     }
 
     /**
-     * Menyimpan data rekam medis baru ke database
+     * Menyimpan data rekam medis baru ke database (post)
      */
     public function store(Request $request)
     {
