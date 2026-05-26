@@ -6,6 +6,7 @@ use App\Http\Controllers\API\v1\AppointmentController;
 use App\Http\Controllers\API\v1\MedicalRecordController;
 use App\Http\Controllers\API\PatientListController;
 use App\Http\Controllers\API\v1\FileController;
+use App\Http\Controllers\API\ExportReportController;
 
 Route::middleware('force.json')->group(function () {
 
@@ -87,13 +88,18 @@ Route::middleware('force.json')->group(function () {
         Route::prefix('v1')->group(function () {
   
         // Group protected by Sanctum and your custom Admin Role Middleware
-        Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
-    
-            // GET /api/v1/patients
-            // Test in Postman with: ?sort=name OR ?sort=today_appointment OR ?sort=doctor
+        Route::middleware(['auth:sanctum', 'role:admin'])->group(function () 
             Route::get('/patients', [PatientListController::class, 'index']);
-      
-  });
-});
-    });
+
+            });
+        });
+
+        // ==========================================
+        // Fitur Export report
+        // ==========================================
+        Route::prefix('v1')->group(function () {
+            Route::middleware(['role:admin'])->group(function () {
+                Route::get('/reports/export', [ExportReportController::class, 'export']);
+            });
+        });
 });
