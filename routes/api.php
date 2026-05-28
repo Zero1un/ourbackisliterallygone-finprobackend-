@@ -42,12 +42,12 @@ Route::middleware('force.json')->group(function () {
             Route::post('/medical-records', [MedicalRecordController::class, 'store']);
         });
 
-        // 2. Admin, Dokter, Pasien (Baca spesifik 1 rekam medis) - INI ENDPOINT BARUMU
+        // 2. Admin, Dokter, Pasien (Baca spesifik 1 rekam medis) 
         Route::get('/medical-records/{id}', [MedicalRecordController::class, 'show'])
             ->middleware('role:admin,doctor,patient');
 
         Route::post('/files/upload-avatar', [FileController::class, 'uploadAvatar'])
-            ->middleware('role:doctor,patient,admin'); // <-- Tambahkan middleware role di sini
+            ->middleware('role:doctor,patient,admin'); 
 
         // 2. Hanya Boleh Diakses Oleh Doctor (atau sesuaikan dengan kebutuhanmu kemarin)
         // 2. Kunci khusus untuk DOCTOR saja
